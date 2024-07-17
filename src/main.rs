@@ -9,6 +9,9 @@ async fn main() -> std::io::Result<()> {
     let config =
         config::load_config("./data/config.json").expect("Failed to load server config files");
 
+    println!("Starting Server...");
+    println!("^C to Shutdown Server:");
+
     HttpServer::new(|| {
         App::new()
             // Home page route
@@ -23,6 +26,7 @@ async fn main() -> std::io::Result<()> {
             .route("/tracker", web::post().to(get_device))
     })
     .bind(config.get_socket_addr().unwrap())?
+    .max_connections(config.max_clients)
     .run()
     .await
 }

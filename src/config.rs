@@ -7,6 +7,7 @@ use std::{fs, net, path::Path};
 pub struct Config {
     pub addr: net::IpAddr,
     pub port: u32,
+    pub max_clients: usize,
 }
 impl Config {
     pub fn get_socket_addr(&self) -> Result<net::SocketAddr> {

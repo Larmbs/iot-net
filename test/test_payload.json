@@ -1,5 +1,5 @@
 {
-    "name": "Device3",
+    "name": "Device4",
     "description": "A sample device",
     "address": "127.0.0.1:8080",
     "sensors": [

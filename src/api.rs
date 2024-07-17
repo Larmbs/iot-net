@@ -38,7 +38,6 @@ pub async fn post_data(info: web::Json<AddEntry>) -> impl Responder {
 }
 
 /// Get device data
-pub async fn get_device(info: web::Json<ID>) -> impl Responder {
-    todo!();
+pub async fn get_device(_info: web::Json<ID>) -> impl Responder {
     HttpResponse::Ok()
 }
