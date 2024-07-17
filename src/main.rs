@@ -19,7 +19,8 @@ async fn main() -> std::io::Result<()> {
             .route("/devices/device", web::post().to(get_device))
             .route("/devices/device/sensor", web::post().to(get_device))
             .route("/devices/device/sensor/entries", web::post().to(get_device))
-        // Routes for site pages
+            // Routes for site pages
+            .route("/tracker", web::post().to(get_device))
     })
     .bind(config.get_socket_addr().unwrap())?
     .run()
