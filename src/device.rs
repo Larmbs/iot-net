@@ -1,13 +1,11 @@
-use serde::{Serialize, Deserialize};
+use super::device_cache;
+use anyhow::{anyhow, Context, Result};
+use bincode;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fs;
 use std::io::Write;
 use std::net;
-use std::collections::HashMap;
-use bincode;
-use anyhow::{Context, Result, anyhow};
-use std::fs;
-use uuid;
-
-type ID = String;
 
 #[derive(Serialize, Deserialize)]
 pub struct Device {
@@ -19,7 +17,12 @@ pub struct Device {
 }
 impl Device {
     pub fn add_entry(&mut self, sensor_name: &String, entry: Entry) -> Result<()> {
-        let sensor = self.sensors.iter_mut().filter(|s| &s.name == sensor_name).nth(0).context("Could not find sensor with that name")?;
+        let sensor = self
+            .sensors
+            .iter_mut()
+            .filter(|s| &s.name == sensor_name)
+            .nth(0)
+            .context("Could not find sensor with that name")?;
         sensor.add_entry(entry)?;
         Ok(())
     }
@@ -27,8 +30,8 @@ impl Device {
 #[derive(Serialize, Deserialize)]
 enum EntryType {
     String,
-    Float, 
-    Integer
+    Float,
+    Integer,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -64,30 +67,30 @@ impl Entry {
 }
 
 /// Saves a new database for device
-pub fn save_device(device: &Device) -> Result<ID> {
-    let id = uuid::Uuid::new_v4().to_string();
+pub fn save_device(device: &Device) -> Result<device_cache::ID> {
+    let id = device_cache::add_device_get_id(&device.name)?;
     let mut file = fs::File::create_new(format!("./data/devices/{}.db", id))?;
     file.write(&bincode::serialize(device)?)?;
     Ok(id)
-}   
+}
 
-pub fn add_entry(id: &String, sensor_name: &String, entry: Entry) -> Result<(), Box<dyn std::error::Error>> {
-    // Construct the file path
+/// Adds an entry into a devices sensor data logs
+pub fn add_entry(
+    id: &device_cache::ID,
+    sensor_name: &String,
+    entry: Entry,
+) -> Result<(), Box<dyn std::error::Error>> {
     let file_path = format!("./data/devices/{}.db", id.trim());
 
-    // Open the file with read-write permissions
     let file = fs::OpenOptions::new()
         .read(true)
         .write(true)
         .open(&file_path)?;
 
-    // Deserialize device data from the file
     let mut device_data: Device = bincode::deserialize_from(&file)?;
 
-    // Add entry to the device data
     device_data.add_entry(&sensor_name, entry)?;
 
-    // Reset the file cursor and serialize updated device data back into the file
     file.set_len(0)?;
     bincode::serialize_into(&file, &device_data)?;
 
