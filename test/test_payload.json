@@ -1,0 +1,41 @@
+{
+    "name": "Device1",
+    "description": "A sample device",
+    "address": "127.0.0.1:8080",
+    "sensors": [
+        {
+            "name": "Sensor1",
+            "description": "Temperature sensor",
+            "entry_type": "Float",
+            "entries": [
+                {
+                    "value": "22.5",
+                    "time": "2023-07-16T12:00:00Z"
+                },
+                {
+                    "value": "23.0",
+                    "time": "2023-07-16T12:10:00Z"
+                }
+            ]
+        },
+        {
+            "name": "Sensor2",
+            "description": "Humidity sensor",
+            "entry_type": "String",
+            "entries": [
+                {
+                    "value": "45%",
+                    "time": "2023-07-16T12:00:00Z"
+                },
+                {
+                    "value": "46%",
+                    "time": "2023-07-16T12:10:00Z"
+                }
+            ]
+        }
+    ],
+    "config": {
+        "setting1": "value1",
+        "setting2": "value2"
+    }
+}
