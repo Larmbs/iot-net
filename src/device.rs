@@ -5,13 +5,11 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
-use std::net;
 
 #[derive(Serialize, Deserialize)]
 pub struct Device {
     name: String,
     description: String,
-    address: net::SocketAddr,
     sensors: Vec<Sensor>,
     config: HashMap<String, String>,
 }
@@ -28,7 +26,7 @@ impl Device {
     }
 }
 #[derive(Serialize, Deserialize)]
-enum EntryType {
+pub enum EntryType {
     String,
     Float,
     Integer,
@@ -95,4 +93,8 @@ pub fn add_entry(
     bincode::serialize_into(&file, &device_data)?;
 
     Ok(())
+}
+
+pub fn get_device(device_id: String) -> Result<Device> {
+    todo!()
 }
