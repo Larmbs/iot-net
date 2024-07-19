@@ -5,10 +5,10 @@ use iot_net::device::Entry;
 use serde::Deserialize;
 use serde_json::json;
 
+pub mod api_error;
 pub mod get;
 pub mod post;
 pub mod site;
-pub mod api_error;
 
 /* Common input structure */
 

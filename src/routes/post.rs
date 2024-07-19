@@ -1,8 +1,8 @@
+use super::api_error;
 use super::Inputs;
 use actix_web::{web, HttpResponse, Responder, Result};
 use iot_net::device::Device;
 use serde_json::json;
-use super::api_error;
 
 /// Adds new device to database if not notifies device why
 pub async fn post_new_device(mut info: web::Json<Device>) -> impl Responder {
@@ -23,6 +23,6 @@ pub async fn post_entry(info: web::Json<Inputs>) -> Result<HttpResponse> {
     if let Err(e) = device.add_entry(info.sensor_name.as_ref().unwrap(), info.entry.clone().unwrap()) {
         return Err(api_error::general_error(e));
     }
-    
+
     Ok(HttpResponse::Ok().finish())
 }

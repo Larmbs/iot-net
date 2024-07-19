@@ -1,6 +1,6 @@
 //! Module which defines common api errors
-use anyhow;
 use actix_web::Error;
+use anyhow;
 
 /// Error thrown when device name or device id provided not found in database
 #[inline]
