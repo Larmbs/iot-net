@@ -1,7 +1,8 @@
 use super::api_error;
 use super::Inputs;
-use actix_web::{web, HttpResponse, Responder};
-use iot_net::device_cache;
+use actix_web::{web, HttpResponse, Responder, Result};
+use anyhow::Context;
+use iot_net::{device_cache, device};
 use serde_json::json;
 
 // struct DeviceInfo {
@@ -20,9 +21,16 @@ pub async fn get_devices() -> HttpResponse {
     }
 }
 
-/// Get basic device data
-pub async fn get_device(_info: web::Json<Inputs>) -> impl Responder {
-    HttpResponse::Ok()
+/// Gets basic device data
+pub async fn get_device(info: web::Json<Inputs>) -> Result<HttpResponse> {
+    info.validate(&["id"])?;
+    let device = device::Device::load(&info.id.clone().unwrap()).map_err(api_error::device_not_found)?;
+    Ok(HttpResponse::Ok().json(json!({
+        "name": device.name,
+        "description": device.description,
+        "sensors": device.get_sensor_names(),
+        "config": device.config
+    })))
 }
 
 // #[derive(Serialize)]

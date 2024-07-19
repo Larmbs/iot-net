@@ -10,10 +10,10 @@ use std::io::{Seek, SeekFrom};
 pub struct Device {
     #[serde(skip_serializing, default = "String::new")]
     id: device_cache::ID,
-    name: String,
-    description: String,
-    sensors: Vec<Sensor>,
-    config: HashMap<String, String>,
+    pub name: String,
+    pub description: String,
+    pub sensors: Vec<Sensor>,
+    pub config: HashMap<String, String>,
 }
 /// General operations
 impl Device {
@@ -26,6 +26,9 @@ impl Device {
             .context("Could not find sensor with that name")?;
         sensor.add_entry(entry)?;
         Ok(())
+    }
+    pub fn get_sensor_names(&self) -> Vec<String> {
+        self.sensors.iter().map(|s| s.name.clone()).collect()
     }
 }
 /// Saving and loading operations for Device
