@@ -1,8 +1,4 @@
 {
-  "devices_id_map": {
-    "Device3": "9d51deef-c1a9-4664-bc0f-e561d80acb3f",
-    "Device2": "02d951fe-255d-4dac-bf96-17187e2f0a90",
-    "Device1": "1723fe9b-8362-4d0f-8ead-b9df898fac39",
-    "Device4": "d7406412-59d6-4ce3-8716-edfffb0643ae"
+  "name_id_map": {
   }
 }

@@ -19,6 +19,5 @@ impl Config {
 
 /// Gets config data
 pub fn load_config<T: AsRef<Path>>(path: T) -> Result<Config> {
-    serde_json::from_reader(fs::File::open(path).context("Unable to read value")?)
-        .context("Unable to deserialize data")
+    serde_json::from_reader(fs::File::open(path).context("Unable to read value")?).context("Unable to deserialize data")
 }

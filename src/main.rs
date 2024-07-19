@@ -1,18 +1,16 @@
 use actix_web::{web, App, HttpServer};
-use iot_net::config;
 
+mod config;
 mod routes;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Getting server config
-    let config = config::load_config("./data/config.json")
-        .expect("Failed to load server config files");
+    let config = config::load_config("./data/config.json").expect("Failed to load server config files");
 
-    let address = config.get_socket_addr()
-        .expect("Address provided is invalid");
+    let address = config.get_socket_addr().expect("Address provided is invalid");
 
-    // Printing some server info 
+    // Printing some server info
     println!("Starting Server...");
     println!("Listening on http://{:?}/", address);
     println!("^C to Shutdown Server:");

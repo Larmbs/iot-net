@@ -4,10 +4,12 @@ use bincode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
-use std::io::Write;
+use std::io::{Seek, SeekFrom};
 
 #[derive(Serialize, Deserialize)]
 pub struct Device {
+    #[serde(skip_serializing, default = "String::new")]
+    id: device_cache::ID,
     name: String,
     description: String,
     sensors: Vec<Sensor>,
@@ -23,6 +25,36 @@ impl Device {
             .context("Could not find sensor with that name")?;
         sensor.add_entry(entry)?;
         Ok(())
+    }
+}
+impl Device {
+    const DEVICES_FOLDER: &'static str = "./data/devices/";
+    /// Loads a device from the devices folder given its ID
+    pub fn load(id: &device_cache::ID) -> Result<Device> {
+        let file = fs::File::open(format!("{}{}.db", Device::DEVICES_FOLDER, id))?;
+        let mut device: Device = bincode::deserialize_from(file).context("File contains error")?;
+        device.id = id.clone();
+        Ok(device)
+    }
+    /// Loads a device from the devices folder given its name
+    pub fn load_from_name(name: &String) -> Result<Device> {
+        let id = device_cache::add_device_get_id(&name)?;
+        Device::load(&id)
+    }
+    /// Saves a device to its respective location in the devices folder
+    pub fn save(&self) -> Result<()> {
+        let mut file = fs::File::open(format!("{}{}.db", Device::DEVICES_FOLDER, self.id))?;
+        file.set_len(0)?;
+        file.seek(SeekFrom::Start(0))?;
+        Ok(bincode::serialize_into(file, &self)?)
+    }
+    /// Saves a device as new meaning it will give it a new ID and add it to the cache
+    pub fn save_as_new(&mut self) -> Result<device_cache::ID> {
+        let id = device_cache::add_device_get_id(&self.name)?;
+        self.id = id.clone();
+        fs::File::create_new(format!("{}{}.db", Device::DEVICES_FOLDER, self.id))?;
+        self.save()?;
+        Ok(id)
     }
 }
 #[derive(Serialize, Deserialize)]
@@ -62,39 +94,4 @@ impl Entry {
             EntryType::Integer => self.value.parse::<i64>().is_ok(),
         }
     }
-}
-
-/// Saves a new database for device
-pub fn save_device(device: &Device) -> Result<device_cache::ID> {
-    let id = device_cache::add_device_get_id(&device.name)?;
-    let mut file = fs::File::create_new(format!("./data/devices/{}.db", id))?;
-    file.write(&bincode::serialize(device)?)?;
-    Ok(id)
-}
-
-/// Adds an entry into a devices sensor data logs
-pub fn add_entry(
-    id: &device_cache::ID,
-    sensor_name: &String,
-    entry: Entry,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let file_path = format!("./data/devices/{}.db", id.trim());
-
-    let file = fs::OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(&file_path)?;
-
-    let mut device_data: Device = bincode::deserialize_from(&file)?;
-
-    device_data.add_entry(&sensor_name, entry)?;
-
-    file.set_len(0)?;
-    bincode::serialize_into(&file, &device_data)?;
-
-    Ok(())
-}
-
-pub fn get_device(device_id: String) -> Result<Device> {
-    todo!()
 }
