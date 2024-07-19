@@ -15,6 +15,7 @@ pub struct Device {
     sensors: Vec<Sensor>,
     config: HashMap<String, String>,
 }
+/// General operations
 impl Device {
     pub fn add_entry(&mut self, sensor_name: &String, entry: Entry) -> Result<()> {
         let sensor = self
@@ -27,6 +28,7 @@ impl Device {
         Ok(())
     }
 }
+/// Saving and loading operations for Device
 impl Device {
     const DEVICES_FOLDER: &'static str = "./data/devices/";
     /// Loads a device from the devices folder given its ID
@@ -43,6 +45,10 @@ impl Device {
     }
     /// Saves a device to its respective location in the devices folder
     pub fn save(&self) -> Result<()> {
+        assert!(
+            self.id != String::new(),
+            "You must use the save_as_new() method. The Device object you provided does not have its id felid filled."
+        );
         let mut file = fs::File::open(format!("{}{}.db", Device::DEVICES_FOLDER, self.id))?;
         file.set_len(0)?;
         file.seek(SeekFrom::Start(0))?;
@@ -59,13 +65,6 @@ impl Device {
 }
 
 #[derive(Serialize, Deserialize)]
-pub enum EntryType {
-    String,
-    Float,
-    Integer,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct Sensor {
     name: String,
     description: String,
@@ -74,11 +73,27 @@ pub struct Sensor {
 }
 impl Sensor {
     fn add_entry(&mut self, entry: Entry) -> Result<()> {
-        if !entry.is_valid_type(&self.entry_type) {
+        if !entry.is_valid(&self.entry_type) {
             return Err(anyhow!("Entry type does not match Sensor's entry_type"));
         }
         self.entries.push(entry);
         Ok(())
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum EntryType {
+    String,
+    Float,
+    Integer,
+}
+impl EntryType {
+    fn validate(&self, value: &String) -> bool {
+        match self {
+            EntryType::String => true,
+            EntryType::Float => value.parse::<f64>().is_ok(),
+            EntryType::Integer => value.parse::<i64>().is_ok(),
+        }
     }
 }
 
@@ -88,11 +103,7 @@ pub struct Entry {
     time: String,
 }
 impl Entry {
-    fn is_valid_type(&self, expected_type: &EntryType) -> bool {
-        match expected_type {
-            EntryType::String => true, // All strings are valid
-            EntryType::Float => self.value.parse::<f64>().is_ok(),
-            EntryType::Integer => self.value.parse::<i64>().is_ok(),
-        }
+    fn is_valid(&self, expected: &EntryType) -> bool {
+        expected.validate(&self.value)
     }
 }
