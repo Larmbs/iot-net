@@ -1,9 +1,10 @@
-use actix_web::{Responder, HttpResponse};
+use actix_files::NamedFile;
+use actix_web::Result;
 
-pub async fn index() -> impl Responder {
-    HttpResponse::Ok()
+pub async fn index() -> Result<NamedFile> {
+    Ok(NamedFile::open("static/index.html")?)
 }
 
-pub async fn tracker() -> impl Responder {
-    HttpResponse::Ok()
+pub async fn about() -> Result<NamedFile> {
+    Ok(NamedFile::open("static/about.html")?)
 }

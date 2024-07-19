@@ -11,15 +11,16 @@ use site::*;
 async fn main() -> std::io::Result<()> {
     let config =
         config::load_config("./data/config.json").expect("Failed to load server config files");
+    let address = config.get_socket_addr().expect("Address provided is invalid");
 
     println!("Starting Server...");
+    println!("Listening on http://{:?}/", address);
     println!("^C to Shutdown Server:");
 
     HttpServer::new(|| {
         App::new()
-            /* Home Page Route */ 
+            /* Home Page Route */
             .route("/", web::get().to(index))
-
             /* API routes for devices to interact with */
             // Post Request
             .route("/devices/new", web::post().to(post_new_device))
@@ -27,12 +28,16 @@ async fn main() -> std::io::Result<()> {
             // Get Requests
             .route("/devices/device", web::get().to(get_device))
             .route("/devices/device/sensor", web::get().to(get_device_sensor))
-            .route("/devices/device/sensor/entries", web::get().to(get_device_sensor_entries))
-
+            .route(
+                "/devices/device/sensor/entries",
+                web::get().to(get_device_sensor_entries),
+            )
             /* Site Routes */
-            .route("/tracker", web::post().to(tracker))
+            .route("/home", web::get().to(index))
+            .route("/about", web::get().to(about))
+            .service(actix_files::Files::new("/static", "static"))
     })
-    .bind(config.get_socket_addr().unwrap())?
+    .bind(address)?
     .max_connections(config.max_clients)
     .run()
     .await
