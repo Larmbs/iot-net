@@ -1,18 +1,18 @@
 use actix_web::{web, App, HttpServer};
 use iot_net::config;
 
-mod api;
-use api::*;
-
-mod site;
-use site::*;
+mod routes;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let config =
-        config::load_config("./data/config.json").expect("Failed to load server config files");
-    let address = config.get_socket_addr().expect("Address provided is invalid");
+    // Getting server config
+    let config = config::load_config("./data/config.json")
+        .expect("Failed to load server config files");
 
+    let address = config.get_socket_addr()
+        .expect("Address provided is invalid");
+
+    // Printing some server info 
     println!("Starting Server...");
     println!("Listening on http://{:?}/", address);
     println!("^C to Shutdown Server:");
@@ -20,21 +20,19 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             /* Home Page Route */
-            .route("/", web::get().to(index))
+            .route("/", web::get().to(routes::site::index))
             /* API routes for devices to interact with */
             // Post Request
-            .route("/devices/new", web::post().to(post_new_device))
-            .route("/devices/post", web::post().to(post_data))
+            .route("/api/post/new", web::post().to(routes::post::post_new_device))
+            .route("/api/post/entry", web::post().to(routes::post::post_entry))
             // Get Requests
-            .route("/devices/device", web::get().to(get_device))
-            .route("/devices/device/sensor", web::get().to(get_device_sensor))
-            .route(
-                "/devices/device/sensor/entries",
-                web::get().to(get_device_sensor_entries),
-            )
+            .route("/api/get/devices", web::post().to(routes::get::get_devices))
+            .route("/api/get/device", web::get().to(routes::get::get_device))
+            .route("/api/get/device/sensor", web::get().to(routes::get::get_device_sensor))
+            .route("/api/get/device/sensor/entries", web::get().to(routes::get::get_device_sensor_entries))
             /* Site Routes */
-            .route("/home", web::get().to(index))
-            .route("/about", web::get().to(about))
+            .route("/home", web::get().to(routes::site::index))
+            .route("/about", web::get().to(routes::site::about))
             .service(actix_files::Files::new("/static", "static"))
     })
     .bind(address)?
