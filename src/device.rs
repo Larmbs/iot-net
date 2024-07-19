@@ -57,6 +57,7 @@ impl Device {
         Ok(id)
     }
 }
+
 #[derive(Serialize, Deserialize)]
 pub enum EntryType {
     String,
