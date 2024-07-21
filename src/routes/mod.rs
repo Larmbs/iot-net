@@ -12,7 +12,7 @@ pub mod site;
 
 /* Common input structure */
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct Inputs {
     pub id: Option<String>,
     pub device_name: Option<String>,

@@ -33,27 +33,59 @@ impl Device {
 }
 /// Saving and loading operations for Device
 impl Device {
-    const DEVICES_FOLDER: &'static str = "./data/devices/";
+    const DEVICES_FOLDER: &'static str = "data/devices/";
+
     /// Loads a device from the devices folder given its ID
     pub fn load(id: &device_cache::ID) -> Result<Device> {
-        let file = fs::File::open(format!("{}{}.db", Device::DEVICES_FOLDER, id))?;
-        let mut device: Device = bincode::deserialize_from(file).context("File contains error")?;
+        // Construct the file path
+        let file_path = format!("{}{}.db", Device::DEVICES_FOLDER, id);
+
+        // Check if the file exists and its size
+        let metadata = fs::metadata(&file_path).with_context(|| format!("Failed to access file metadata: {}", file_path))?;
+        let file_size = metadata.len();
+
+        // Log file size for debugging
+        println!("Loading file: {} (Size: {} bytes)", file_path, file_size);
+
+        // Check if file size is reasonable (e.g., limit to 100 MB)
+        if file_size > 100 * 1024 * 1024 {
+            return Err(anyhow::anyhow!("File size exceeds 100 MB limit"));
+        }
+
+        // Open the file with appropriate error handling
+        let file = fs::File::open(&file_path)
+            .with_context(|| format!("Failed to open file: {}", file_path))?;
+
+        // Deserialize the device with error context
+        let mut device: Device = bincode::deserialize_from(file)
+            .context("File contains error or is corrupted")?;
+
+        // Set the device ID
         device.id = id.clone();
         Ok(device)
     }
+
     /// Loads a device from the devices folder given its name
     pub fn load_from_name(name: &String) -> Result<Device> {
-        let id = device_cache::add_device_get_id(&name)?;
+        // Retrieve the device ID based on the name
+        let id = device_cache::add_device_get_id(&name)
+            .context("Failed to get device ID from name")?;
+
+        // Load the device using the ID
         Device::load(&id)
     }
+
     /// Saves a device to its respective location in the devices folder
     pub fn save(&self) -> Result<()> {
         assert!(
             self.id != String::new(),
-            "You must use the save_as_new() method. The Device object you provided does not have its id felid filled."
+            "You must use the save_as_new() method. The Device object you provided does not have its id field filled."
         );
-        let mut file = fs::File::open(format!("{}{}.db", Device::DEVICES_FOLDER, self.id))?;
-        file.set_len(0)?;
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(format!("{}{}.db", Device::DEVICES_FOLDER, self.id))
+            .context("Failed to open file for saving")?;
         file.seek(SeekFrom::Start(0))?;
         Ok(bincode::serialize_into(file, &self)?)
     }
@@ -61,8 +93,19 @@ impl Device {
     pub fn save_as_new(&mut self) -> Result<device_cache::ID> {
         let id = device_cache::add_device_get_id(&self.name)?;
         self.id = id.clone();
-        fs::File::create_new(format!("{}{}.db", Device::DEVICES_FOLDER, self.id))?;
-        self.save()?;
+        let file_path = format!("{}{}.db", Device::DEVICES_FOLDER, self.id);
+        
+        if fs::metadata(&file_path).is_ok() {
+            return Err(anyhow!("File already exists: {}", file_path));
+        }
+        
+        let file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&file_path)
+            .context("Failed to create new file for saving")?;
+        
+        bincode::serialize_into(file, &self).context("Failed to serialize device")?;
         Ok(id)
     }
 }
@@ -100,7 +143,7 @@ impl EntryType {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Entry {
     value: String,
     time: String,

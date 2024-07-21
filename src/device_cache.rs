@@ -1,7 +1,6 @@
 use anyhow::{anyhow, Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json;
-use std::io::{Seek, SeekFrom};
 use std::{collections::HashMap, fs};
 use uuid::Uuid;
 
@@ -13,18 +12,24 @@ pub struct DevicesCache {
     pub name_id_map: HashMap<String, ID>,
 }
 impl DevicesCache {
-    const CACHE_PATH: &'static str = "./data/devices.json";
+    const CACHE_PATH: &'static str = "data/devices.json";
+
     /// Loads a device cache
     pub fn load() -> Result<DevicesCache> {
         let file = fs::File::open(DevicesCache::CACHE_PATH)?;
         serde_json::from_reader(file).context("File contains error")
     }
+
     /// Saves the device cache to dir
     pub fn save(&self) -> Result<()> {
-        let mut file = fs::File::open(DevicesCache::CACHE_PATH)?;
-        file.set_len(0)?;
-        file.seek(SeekFrom::Start(0))?;
-        serde_json::to_writer(&file, self)?;
+        // Open the file with write permissions and truncation
+        let file = fs::OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(DevicesCache::CACHE_PATH)
+            .context("Failed to open cache file for writing")?;
+        
+        serde_json::to_writer(&file, self).context("Failed to write cache to file")?;
         Ok(())
     }
 }

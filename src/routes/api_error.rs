@@ -5,7 +5,7 @@ use anyhow;
 /// Error thrown when device name or device id provided not found in database
 #[inline]
 pub fn device_not_found(e: anyhow::Error) -> Error {
-    actix_web::error::ErrorInternalServerError(format!("Device not found: {e}"))
+    actix_web::error::ErrorNotFound(format!("Device not found: {e}"))
 }
 
 /// General conversion between anyhow errors and internal server errors

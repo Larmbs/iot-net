@@ -1,5 +1,6 @@
 {
-    "name": "Device4",
+    "id":"",
+    "name": "Device3",
     "description": "A sample device",
     "sensors": [
         {
