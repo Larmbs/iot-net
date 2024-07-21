@@ -1,7 +1,7 @@
 use super::api_error;
 use super::Inputs;
 use actix_web::{web, HttpResponse, Responder, Result};
-use iot_net::{device_cache, device};
+use iot_net::{device, device_cache};
 use serde_json::json;
 
 // struct DeviceInfo {

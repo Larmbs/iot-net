@@ -28,7 +28,7 @@ impl DevicesCache {
             .truncate(true)
             .open(DevicesCache::CACHE_PATH)
             .context("Failed to open cache file for writing")?;
-        
+
         serde_json::to_writer(&file, self).context("Failed to write cache to file")?;
         Ok(())
     }

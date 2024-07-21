@@ -18,7 +18,7 @@ pub async fn post_new_device(info: web::Json<Device>) -> impl Responder {
 pub async fn post_entry(info: web::Json<Inputs>) -> Result<HttpResponse> {
     let inputs = info.into_inner();
     inputs.validate(&["id", "sensor_name", "entry"])?; // Validating the provided arguments
-    
+
     let mut device = Device::load(&inputs.id.clone().unwrap()).map_err(|e| api_error::device_not_found(e))?;
     println!("hello1");
 

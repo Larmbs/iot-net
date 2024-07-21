@@ -37,41 +37,18 @@ impl Device {
 
     /// Loads a device from the devices folder given its ID
     pub fn load(id: &device_cache::ID) -> Result<Device> {
-        // Construct the file path
         let file_path = format!("{}{}.db", Device::DEVICES_FOLDER, id);
 
-        // Check if the file exists and its size
-        let metadata = fs::metadata(&file_path).with_context(|| format!("Failed to access file metadata: {}", file_path))?;
-        let file_size = metadata.len();
+        let file = fs::File::open(&file_path)?;
+        let mut device: Device = bincode::deserialize_from(file)?;
 
-        // Log file size for debugging
-        println!("Loading file: {} (Size: {} bytes)", file_path, file_size);
-
-        // Check if file size is reasonable (e.g., limit to 100 MB)
-        if file_size > 100 * 1024 * 1024 {
-            return Err(anyhow::anyhow!("File size exceeds 100 MB limit"));
-        }
-
-        // Open the file with appropriate error handling
-        let file = fs::File::open(&file_path)
-            .with_context(|| format!("Failed to open file: {}", file_path))?;
-
-        // Deserialize the device with error context
-        let mut device: Device = bincode::deserialize_from(file)
-            .context("File contains error or is corrupted")?;
-
-        // Set the device ID
         device.id = id.clone();
         Ok(device)
     }
 
     /// Loads a device from the devices folder given its name
     pub fn load_from_name(name: &String) -> Result<Device> {
-        // Retrieve the device ID based on the name
-        let id = device_cache::add_device_get_id(&name)
-            .context("Failed to get device ID from name")?;
-
-        // Load the device using the ID
+        let id = device_cache::add_device_get_id(&name).context("Failed to get device ID from name")?;
         Device::load(&id)
     }
 
@@ -94,17 +71,17 @@ impl Device {
         let id = device_cache::add_device_get_id(&self.name)?;
         self.id = id.clone();
         let file_path = format!("{}{}.db", Device::DEVICES_FOLDER, self.id);
-        
+
         if fs::metadata(&file_path).is_ok() {
             return Err(anyhow!("File already exists: {}", file_path));
         }
-        
+
         let file = fs::OpenOptions::new()
             .write(true)
             .create_new(true)
             .open(&file_path)
             .context("Failed to create new file for saving")?;
-        
+
         bincode::serialize_into(file, &self).context("Failed to serialize device")?;
         Ok(id)
     }
