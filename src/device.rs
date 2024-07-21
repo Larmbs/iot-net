@@ -8,7 +8,7 @@ use std::io::{Seek, SeekFrom};
 
 #[derive(Serialize, Deserialize)]
 pub struct Device {
-    #[serde(skip_serializing, default = "String::new")]
+    #[serde(skip_serializing, default = "String::new", skip_deserializing)]
     id: device_cache::ID,
     pub name: String,
     pub description: String,
