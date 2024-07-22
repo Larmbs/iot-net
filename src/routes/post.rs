@@ -1,8 +1,20 @@
 use super::api_error;
 use super::Inputs;
 use actix_web::{web, HttpResponse, Responder, Result};
-use iot_net::device::Device;
+use iot_net::{device::Device, device_cache};
 use serde_json::json;
+
+/// Gets a devices id from its name
+pub async fn device_id(info: web::Json<Inputs>) -> Result<HttpResponse> {
+    info.validate(&["device_name"])?;
+
+    match device_cache::get_device_id(&info.device_name.clone().unwrap()) {
+        Ok(id) => Ok(HttpResponse::Ok().json(json!({
+            "id": id
+        }))),
+        Err(e) => Err(api_error::general_error(e).into()),
+    }
+}
 
 /// Adds new device to database if not notifies device why
 pub async fn post_new_device(info: web::Json<Device>) -> impl Responder {

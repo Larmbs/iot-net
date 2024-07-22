@@ -23,6 +23,8 @@ async fn main() -> std::io::Result<()> {
             // Post Request
             .route("/api/post/new", web::post().to(routes::post::post_new_device))
             .route("/api/post/entry", web::post().to(routes::post::post_entry))
+            .route("/api/post/device_id", web::post().to(routes::post::device_id))
+
             // Get Requests
             .route("/api/get/devices", web::get().to(routes::get::get_devices))
             .route("/api/get/device", web::get().to(routes::get::get_device))

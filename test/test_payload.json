@@ -1,41 +1,14 @@
 {
-    "id":"",
-    "name": "Device4",
-    "description": "A sample device",
-    "sensors": [
-        {
-            "name": "Sensor1",
-            "description": "Temperature sensor",
-            "entry_type": "Float",
-            "entries": [
-                {
-                    "value": "22.5",
-                    "time": "2023-07-16T12:00:00Z"
-                },
-                {
-                    "value": "23.0",
-                    "time": "2023-07-16T12:10:00Z"
-                }
-            ]
-        },
-        {
-            "name": "Sensor2",
-            "description": "Humidity sensor",
-            "entry_type": "String",
-            "entries": [
-                {
-                    "value": "45%",
-                    "time": "2023-07-16T12:00:00Z"
-                },
-                {
-                    "value": "46%",
-                    "time": "2023-07-16T12:10:00Z"
-                }
-            ]
-        }
-    ],
-    "config": {
-        "setting1": "value1",
-        "setting2": "value2"
+  "id": "",
+  "name": "Temperature Sensor",
+  "description": "A device that samples the temperature in the air",
+  "sensors": [
+    {
+      "name": "Temperature Sensor",
+      "description": "Detects the ambient temperature in the air",
+      "entry_type": "Float",
+      "entries": []
     }
+  ],
+  "config": {}
 }
