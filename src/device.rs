@@ -1,3 +1,4 @@
+//! Device
 use super::device_cache;
 use anyhow::{anyhow, Context, Result};
 use bincode;
