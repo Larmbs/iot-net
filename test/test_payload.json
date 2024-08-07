@@ -1,7 +1,7 @@
 {
   "id": "",
-  "name": "Temperature Sensor",
-  "description": "A device that samples the temperature in the air",
+  "name": "Doorbell2",
+  "description": "Rings a lot",
   "sensors": [
     {
       "name": "Temperature Sensor",

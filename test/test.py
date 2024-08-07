@@ -15,7 +15,7 @@ def main():
     # Adding an entry
     payload = {
         "id": response.json()['id'],
-        "sensor_name":"Sensor1",
+        "sensor_name":"Temperature Sensor",
         "entry":{
             "value":"56.5",
             "time":"12:34:56"

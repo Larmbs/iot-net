@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   );
   console.log(device_id_map.devices);
   for (let name in device_id_map.devices) {
-    let device_details = await fetch("/api/get/device", {
+    let device_details = await fetch("/api/post/device", {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'

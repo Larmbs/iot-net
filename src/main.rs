@@ -24,11 +24,11 @@ async fn main() -> std::io::Result<()> {
             .route("/api/post/new", web::post().to(routes::post::post_new_device))
             .route("/api/post/entry", web::post().to(routes::post::post_entry))
             .route("/api/post/device_id", web::post().to(routes::post::device_id))
+            .route("/api/post/device", web::post().to(routes::post::get_device))
+            .route("/api/post/device/sensor", web::post().to(routes::post::get_device_sensor))
+            .route("/api/post/device/sensor/entries", web::post().to(routes::post::get_device_sensor_entries))
             // Get Requests
             .route("/api/get/devices", web::get().to(routes::get::get_devices))
-            .route("/api/get/device", web::post().to(routes::get::get_device))
-            .route("/api/get/device/sensor", web::post().to(routes::get::get_device_sensor))
-            .route("/api/get/device/sensor/entries", web::post().to(routes::get::get_device_sensor_entries))
             /* Site Routes */
             .route("/home", web::get().to(routes::site::index))
             .route("/about", web::get().to(routes::site::about))
