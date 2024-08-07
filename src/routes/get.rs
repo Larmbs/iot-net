@@ -16,6 +16,7 @@ pub async fn get_devices() -> HttpResponse {
 /// Gets basic device data
 pub async fn get_device(info: web::Json<Inputs>) -> Result<HttpResponse> {
     info.validate(&["id"])?;
+    println!("{}", &info.id.clone().unwrap());
     let device = device::Device::load(&info.id.clone().unwrap()).map_err(api_error::device_not_found)?;
     Ok(HttpResponse::Ok().json(json!({
         "name": device.name,
