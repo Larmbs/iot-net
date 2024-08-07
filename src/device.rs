@@ -31,6 +31,9 @@ impl Device {
     pub fn get_sensor_names(&self) -> Vec<String> {
         self.sensors.iter().map(|s| s.name.clone()).collect()
     }
+    pub fn get_sensor_by_name(&self, sensor_name: &String) -> Option<&Sensor> {
+        self.sensors.iter().filter(|sensor| sensor.name == *sensor_name).nth(0)
+    }
 }
 /// Saving and loading operations for Device
 impl Device {
@@ -90,10 +93,10 @@ impl Device {
 
 #[derive(Serialize, Deserialize)]
 pub struct Sensor {
-    name: String,
-    description: String,
-    entry_type: EntryType,
-    entries: Vec<Entry>,
+    pub name: String,
+    pub description: String,
+    pub entry_type: EntryType,
+    pub entries: Vec<Entry>,
 }
 impl Sensor {
     fn add_entry(&mut self, entry: Entry) -> Result<()> {
@@ -102,6 +105,9 @@ impl Sensor {
         }
         self.entries.push(entry);
         Ok(())
+    }
+    pub fn get_entries_from_time(&self, time: &String) -> &Vec<Entry> {
+        todo!()
     }
 }
 

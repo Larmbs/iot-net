@@ -32,11 +32,9 @@ pub async fn post_entry(info: web::Json<Inputs>) -> Result<HttpResponse> {
     inputs.validate(&["id", "sensor_name", "entry"])?; // Validating the provided arguments
 
     let mut device = Device::load(&inputs.id.clone().unwrap()).map_err(|e| api_error::device_not_found(e))?;
-    println!("hello1");
 
     if let Err(e) = device.add_entry(&inputs.sensor_name.clone().unwrap(), inputs.entry.clone().unwrap()) {
         return Err(api_error::general_error(e));
     }
-    println!("hello");
     Ok(HttpResponse::Ok().finish())
 }

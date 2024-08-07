@@ -6,7 +6,7 @@ mod routes;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Getting server config
-    let config = config::load_config("./data/config.json").expect("Failed to load server config files");
+    let config = config::load_config("./config/server_config.json").expect("Failed to load server config files");
 
     let address = config.get_socket_addr().expect("Address provided is invalid");
 
@@ -24,12 +24,11 @@ async fn main() -> std::io::Result<()> {
             .route("/api/post/new", web::post().to(routes::post::post_new_device))
             .route("/api/post/entry", web::post().to(routes::post::post_entry))
             .route("/api/post/device_id", web::post().to(routes::post::device_id))
-
             // Get Requests
             .route("/api/get/devices", web::get().to(routes::get::get_devices))
-            .route("/api/get/device", web::get().to(routes::get::get_device))
-            .route("/api/get/device/sensor", web::get().to(routes::get::get_device_sensor))
-            .route("/api/get/device/sensor/entries", web::get().to(routes::get::get_device_sensor_entries))
+            .route("/api/get/device", web::post().to(routes::get::get_device))
+            .route("/api/get/device/sensor", web::post().to(routes::get::get_device_sensor))
+            .route("/api/get/device/sensor/entries", web::post().to(routes::get::get_device_sensor_entries))
             /* Site Routes */
             .route("/home", web::get().to(routes::site::index))
             .route("/about", web::get().to(routes::site::about))

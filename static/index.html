@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IoT Device Hub</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="/static/load_devices.js"></script>
 </head>
 <body>
     <header>
         <h1>IoT Device Hub</h1>
         <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Devices</a></li>
-                <li><a href="#">Settings</a></li>
-                <li><a href="#">Support</a></li>
-            </ul>
+            <a href="/">Home</a>
+            <a href="/">Tracker</a>
+            <a>About</a>
         </nav>
     </header>
     <main>
@@ -25,18 +23,7 @@
         </section>
         <section class="devices">
             <h2>Your Devices</h2>
-            <div class="device-grid">
-                <div class="device-card">
-                    <h3>Living Room Light</h3>
-                    <p>Status: <span class="status-on">On</span></p>
-                    <button>Toggle</button>
-                </div>
-                <div class="device-card">
-                    <h3>Thermostat</h3>
-                    <p>Status: <span class="status-off">Off</span></p>
-                    <button>Toggle</button>
-                </div>
-                <!-- Add more device cards as needed -->
+            <div class="device-grid" id="device-list">
             </div>
         </section>
     </main>
