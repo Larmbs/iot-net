@@ -106,7 +106,7 @@ impl Sensor {
         self.entries.push(entry);
         Ok(())
     }
-    pub fn get_entries_from_time(&self, time: &String) -> &Vec<Entry> {
+    pub fn get_entries_from_time(&self, _time: &String) -> &Vec<Entry> {
         todo!()
     }
 }

@@ -32,6 +32,7 @@ async fn main() -> std::io::Result<()> {
             /* Site Routes */
             .route("/home", web::get().to(routes::site::index))
             .route("/about", web::get().to(routes::site::about))
+            .route("/tracker", web::get().to(routes::site::tracker))
             .service(actix_files::Files::new("/static", "static"))
     })
     .bind(address)?

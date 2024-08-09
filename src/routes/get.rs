@@ -1,7 +1,6 @@
 use super::api_error;
-use super::Inputs;
-use actix_web::{web, HttpResponse, Result};
-use iot_net::{device, device_cache};
+use actix_web::HttpResponse;
+use iot_net::device_cache;
 use serde_json::json;
 
 pub async fn get_devices() -> HttpResponse {
